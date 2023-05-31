@@ -48,6 +48,7 @@ public class UserController {
 
 	@GetMapping
 	public ResponseEntity<List<UserResponseModel>> getAllUsers() {
+		log.info("inside getAllUsers()");
 		List<UserResponseModel> resList = new ArrayList<UserResponseModel>();
 		List<UserEntity> entities = userService.getAllUsers();
 		for (UserEntity entity : entities) {
