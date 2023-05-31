@@ -14,28 +14,27 @@ import com.example.demo.service.UserService;
 import com.example.demo.ui.UserRequestModel;
 import com.example.demo.ui.UserResponseModel;
 
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 @RestController
+@AllArgsConstructor
 @RequestMapping("/users")
+@Slf4j
 public class UserController {
 	private final ModelMapper modelMapper;
 	private final UserService userService;
 
-	public UserController(ModelMapper modelMapper, UserService userService) {
-		super();
-		this.modelMapper = modelMapper;
-		this.userService = userService;
-	}
-
 	@PostMapping
 	public ResponseEntity<UserResponseModel> createUser(@RequestBody UserRequestModel requestModel) {
+		log.info("inside create user with request:: "+requestModel);
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
 		UserDto userDto = modelMapper.map(requestModel, UserDto.class);
-		System.out.println(userDto);
 		StringBuffer sb = new StringBuffer();
 		sb.append(requestModel.getPassword());
 		userDto.setEncryptedPassword(sb.reverse().toString());
-		System.out.println(userDto);
+		log.info("userDto :: "+userDto);
 		UserResponseModel responseModel = userService.createUser(userDto);
 
 		return ResponseEntity.status(HttpStatus.CREATED).body(responseModel);
