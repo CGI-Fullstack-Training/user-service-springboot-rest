@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.dto.UserDto;
 import com.example.demo.entity.UserEntity;
+import com.example.demo.exception.MyCustomException;
 import com.example.demo.service.UserService;
 import com.example.demo.ui.ErrorModel;
 import com.example.demo.ui.UserRequestModel;
@@ -35,14 +36,22 @@ public class UserController {
 	private final ModelMapper modelMapper;
 	private final UserService userService;
 
-	@ExceptionHandler(value = NumberFormatException.class)	
-	public ResponseEntity<ErrorModel> handleException(NumberFormatException e)
-	{
-		ErrorModel errorModel=new ErrorModel(HttpStatus.BAD_REQUEST.value(), e.getMessage(), System.currentTimeMillis());
-		
+	@ExceptionHandler(value = NumberFormatException.class)
+	public ResponseEntity<ErrorModel> handleException(NumberFormatException e) {
+		ErrorModel errorModel = new ErrorModel(HttpStatus.BAD_REQUEST.value(), e.getMessage(),
+				System.currentTimeMillis());
+
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorModel);
 	}
-	
+
+	@ExceptionHandler(value = MyCustomException.class)
+	public ResponseEntity<ErrorModel> handleIdNotFoundException(MyCustomException e) {
+		ErrorModel errorModel = new ErrorModel(HttpStatus.NOT_FOUND.value(), e.getMessage(),
+				System.currentTimeMillis());
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorModel);
+
+	}
+
 	@PostMapping
 	public ResponseEntity<UserResponseModel> createUser(@RequestBody UserRequestModel requestModel) {
 		log.info("inside create user with request:: " + requestModel);
@@ -71,10 +80,10 @@ public class UserController {
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<?> getuserById(@PathVariable("id") int id) throws NumberFormatException{
+	public ResponseEntity<?> getuserById(@PathVariable("id") int id) throws NumberFormatException, MyCustomException{
 		UserResponseModel response = userService.getuserById(id);
 		if (response == null) {
-			 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("user with id " + id + " not found");
+			throw new MyCustomException("User With id " + id + " nt found");
 		} else {
 			return ResponseEntity.status(HttpStatus.OK).body(userService.getuserById(id));
 		}
