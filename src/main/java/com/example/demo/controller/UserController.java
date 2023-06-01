@@ -51,6 +51,14 @@ public class UserController {
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorModel);
 
 	}
+	@ExceptionHandler(value = IllegalArgumentException.class)
+	public ResponseEntity<ErrorModel> handleIllegalArgumentException(IllegalArgumentException e) {
+		log.info("hello ::::  "+e.toString());
+		ErrorModel errorModel = new ErrorModel(HttpStatus.BAD_REQUEST.value(), "Illegal argument passed",
+				System.currentTimeMillis());
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorModel);
+
+	}
 
 	@PostMapping
 	public ResponseEntity<UserResponseModel> createUser(@RequestBody UserRequestModel requestModel) {
@@ -105,4 +113,17 @@ public class UserController {
 	public void deleteAllUsers() {
 		userService.deleteAllUsers();
 	}
+	
+	@GetMapping("/findByUserId/{userId}")
+	public ResponseEntity<UserResponseModel> findByUserId(@PathVariable("userId") String userId){
+		return ResponseEntity.ok(userService.findByUserId(userId));
+	}
+	
+	@GetMapping("/findByEmail/{email}")
+	public ResponseEntity<UserResponseModel> findByEmail(@PathVariable("email") String email)
+			throws IllegalArgumentException{
+		return ResponseEntity.ok(userService.findByEmail(email));
+	}
+	
+	
 }

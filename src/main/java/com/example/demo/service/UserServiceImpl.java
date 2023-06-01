@@ -80,4 +80,17 @@ public class UserServiceImpl implements UserService {
 		userRepository.deleteAll();
 	}
 
+	@Override
+	public UserResponseModel findByUserId(String userId) {
+
+		UserEntity entity= userRepository.findByUserId(userId);
+		 return modelMapper.map(entity, UserResponseModel.class);
+	}
+
+	@Override
+	public UserResponseModel findByEmail(String email) {
+		UserEntity entity = userRepository.findByEmail(email);
+		return modelMapper.map(entity, UserResponseModel.class);
+	}
+
 }

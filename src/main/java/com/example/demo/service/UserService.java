@@ -20,4 +20,8 @@ public interface UserService {
 	public UserResponseModel updateUserById(int id,UserRequestModel requestModel);
 
 	public void deleteAllUsers();
+
+	public UserResponseModel findByUserId(String userId);
+
+	public UserResponseModel findByEmail(String email);
 }
