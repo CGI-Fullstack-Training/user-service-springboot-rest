@@ -54,8 +54,13 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public void deleteUserById(int id) {
-		userRepository.deleteById(id);
+	public String deleteUserById(int id) {
+		Optional<UserEntity> userEntityFromDb = userRepository.findById(id);
+		if (userEntityFromDb.isPresent()) {
+			userRepository.deleteById(id);
+			return "User with Id " + id + " deleted successfully";
+		}
+		return "User with Id " + id + " not found";
 
 	}
 
@@ -76,15 +81,21 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public void deleteAllUsers() {
-		userRepository.deleteAll();
+	public String deleteAllUsers() {
+		List<UserEntity> usersList = userRepository.findAll();
+		if (usersList.isEmpty()) {
+			return "users not exist";
+		} else {
+			userRepository.deleteAll();
+			return "Deleted all users";
+		}
 	}
 
 	@Override
 	public UserResponseModel findByUserId(String userId) {
 
-		UserEntity entity= userRepository.findByUserId(userId);
-		 return modelMapper.map(entity, UserResponseModel.class);
+		UserEntity entity = userRepository.findByUserId(userId);
+		return modelMapper.map(entity, UserResponseModel.class);
 	}
 
 	@Override

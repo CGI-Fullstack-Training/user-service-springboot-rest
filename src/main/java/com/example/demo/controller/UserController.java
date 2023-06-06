@@ -51,9 +51,10 @@ public class UserController {
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorModel);
 
 	}
+
 	@ExceptionHandler(value = IllegalArgumentException.class)
 	public ResponseEntity<ErrorModel> handleIllegalArgumentException(IllegalArgumentException e) {
-		log.info("hello ::::  "+e.toString());
+		log.info("hello ::::  " + e.toString());
 		ErrorModel errorModel = new ErrorModel(HttpStatus.BAD_REQUEST.value(), "Illegal argument passed",
 				System.currentTimeMillis());
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorModel);
@@ -88,7 +89,7 @@ public class UserController {
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<?> getuserById(@PathVariable("id") int id) throws NumberFormatException, MyCustomException{
+	public ResponseEntity<?> getuserById(@PathVariable("id") int id) throws NumberFormatException, MyCustomException {
 		UserResponseModel response = userService.getuserById(id);
 		if (response == null) {
 			throw new MyCustomException("User With id " + id + " nt found");
@@ -99,8 +100,9 @@ public class UserController {
 	}
 
 	@DeleteMapping("/{id}")
-	public void deleteUserById(@PathVariable("id") int id) {
-		userService.deleteUserById(id);
+	public ResponseEntity<?> deleteUserById(@PathVariable("id") int id) {
+		return ResponseEntity.ok(userService.deleteUserById(id));
+
 	}
 
 	@PutMapping("/{id}")
@@ -110,20 +112,19 @@ public class UserController {
 	}
 
 	@DeleteMapping
-	public void deleteAllUsers() {
-		userService.deleteAllUsers();
+	public ResponseEntity<?> deleteAllUsers() {
+		return ResponseEntity.ok(userService.deleteAllUsers());
 	}
-	
+
 	@GetMapping("/findByUserId/{userId}")
-	public ResponseEntity<UserResponseModel> findByUserId(@PathVariable("userId") String userId){
+	public ResponseEntity<UserResponseModel> findByUserId(@PathVariable("userId") String userId) {
 		return ResponseEntity.ok(userService.findByUserId(userId));
 	}
-	
+
 	@GetMapping("/findByEmail/{email}")
 	public ResponseEntity<UserResponseModel> findByEmail(@PathVariable("email") String email)
-			throws IllegalArgumentException{
+			throws IllegalArgumentException {
 		return ResponseEntity.ok(userService.findByEmail(email));
 	}
-	
-	
+
 }

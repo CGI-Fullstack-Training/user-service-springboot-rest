@@ -15,11 +15,11 @@ public interface UserService {
 
 	public UserResponseModel getuserById(int id);
 
-	public void deleteUserById(int id);
+	public String deleteUserById(int id);
 
 	public UserResponseModel updateUserById(int id,UserRequestModel requestModel);
 
-	public void deleteAllUsers();
+	public String deleteAllUsers();
 
 	public UserResponseModel findByUserId(String userId);
 
