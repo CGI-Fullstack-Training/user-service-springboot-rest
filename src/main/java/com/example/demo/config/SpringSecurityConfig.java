@@ -29,6 +29,7 @@ public class SpringSecurityConfig {
 				.hasRole("ADMIN").antMatchers(HttpMethod.DELETE, "/users/**").hasRole("ADMIN"));
 		http.httpBasic(Customizer.withDefaults());
 		http.csrf(csrf -> csrf.disable());
+		//h2-console if we use H2 db need to add below line
 		http.authorizeHttpRequests().antMatchers("/h2-console/**").permitAll();
 		http.headers(headers -> headers.frameOptions().disable());
 		return http.build();
