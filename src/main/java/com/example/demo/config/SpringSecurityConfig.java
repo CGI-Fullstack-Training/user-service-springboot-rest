@@ -1,34 +1,36 @@
 package com.example.demo.config;
 
+import javax.sql.DataSource;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.User.UserBuilder;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.provisioning.JdbcUserDetailsManager;
+import org.springframework.security.provisioning.UserDetailsManager;
+import org.springframework.security.web.SecurityFilterChain;
 
-@SuppressWarnings("deprecation")
 @Configuration
 @EnableWebSecurity
-public class SpringSecurityConfig extends WebSecurityConfigurerAdapter{
-	@Override
-	protected void configure(HttpSecurity http) throws Exception {
-		super.configure(http);
-		http.csrf().disable();
-		http.formLogin().disable();
-	}
-
+public class SpringSecurityConfig {
+	
 	@Bean
-	public UserDetailsService userDetailsService() {
-		// ok for demo
-		UserBuilder users = User.withDefaultPasswordEncoder();
-
-		InMemoryUserDetailsManager manager = new InMemoryUserDetailsManager();
-		manager.createUser(users.username("user").password("password").roles("role1").build());
-		manager.createUser(users.username("admin").password("password").roles("role2").build());
-		return manager;
+	public UserDetailsManager userDetailsManager(DataSource dataSource) {
+		
+		return new JdbcUserDetailsManager(dataSource);
+	}
+	
+	@Bean
+	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+		http.authorizeHttpRequests(configurer -> configurer.antMatchers(HttpMethod.GET, "/users/**").hasRole("EMPLOYEE")
+				.antMatchers(HttpMethod.POST, "/users").hasRole("MANAGER").antMatchers(HttpMethod.PUT, "/users/**")
+				.hasRole("ADMIN").antMatchers(HttpMethod.DELETE, "/users/**").hasRole("ADMIN"));
+		http.httpBasic(Customizer.withDefaults());
+		http.csrf(csrf -> csrf.disable());
+		http.authorizeHttpRequests().antMatchers("/h2-console/**").permitAll();
+		http.headers(headers -> headers.frameOptions().disable());
+		return http.build();
 	}
 }
